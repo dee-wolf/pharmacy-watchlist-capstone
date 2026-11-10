@@ -1,18 +1,21 @@
 import pandas as pd
 
-def generate_enrollment():
+def generate_enrollment(num_pharmacies=250):
     test_npis = []
-    for i in range(1, 251):
+    if isinstance(num_pharmacies, bool) or not isinstance(num_pharmacies, int):
+        raise TypeError("Please enter a whole number.")
+    if num_pharmacies <= 0:
+        raise ValueError("Please enter a whole number greater than zero.")
+    for i in range(1, num_pharmacies + 1):
         npi = f"TEST-{i:06d}"
         test_npis.append(npi)
-    return test_npis
-
-if __name__ == "__main__":
-    npis = generate_enrollment()
     df = pd.DataFrame({
-        "Pharmacy NPI":npis
+        "Pharmacy NPI":test_npis
     })
     df.to_excel("data/raw/enrolled_pharmacies.xlsx", index=False)
-    enrollment_df = pd.read_excel("data/raw/enrolled_pharmacies.xlsx")
-    print(enrollment_df.head())
-    print(enrollment_df.shape)
+    return df
+
+if __name__ == "__main__":
+    npis = generate_enrollment(500)
+    print(npis.head())
+    print(npis.shape)
