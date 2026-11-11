@@ -79,7 +79,6 @@ Generated datasets and output files are excluded from version control.
 ![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
 
 
-
 ## Development Roadmap
 
 1. Complete synthetic data generation and validation.

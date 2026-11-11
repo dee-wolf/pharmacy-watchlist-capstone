@@ -5,7 +5,7 @@ from itertools import product
 from .enrollment import generate_enrollment
 from .name_parts import pharmacy_names, pharmacy_types
 from .watchlist_reasons import watchlist_reasons, reason_weights
-from validators.watchlist_validator import validate_watchlist
+from ..validators.watchlist_validator import validate_watchlist
 
 def generate_watchlist(
     num_pharmacies=300,
