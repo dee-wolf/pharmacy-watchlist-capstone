@@ -25,14 +25,55 @@ This project aims to:
 - **Python-pptx** – PowerPoint report generation
 - **Git & GitHub** – Version control and project management
 
-## Data & Privacy
+## Current Implementation
 
-All datasets used in this project are synthetically generated and contain no real patient, pharmacy, member, or claims information. Pharmacy identifiers are fictional test values and are not actual National Provider Identifiers (NPIs).
+The initial synthetic data generation phase is operational.
 
-The project is intended for educational and portfolio demonstration purposes and does not process production healthcare data or protected health information (PHI).
+### Completed
 
-## Project Status
+- Configurable synthetic pharmacy enrollment directory generation.
+- Monthly pharmacy watchlist generation.
+- Synthetic pharmacy names and test identifiers.
+- Configurable watchlist reasons and associated review details.
+- Weighted random selection of watchlist categories.
+- Reproducible data generation using configurable random seeds.
+- Excel export of generated datasets.
+- Initial data-quality validation, including record counts, NPI uniqueness, and network participation counts.
 
-**In Development**
+### In Progress
 
-The initial phase focuses on building a reproducible synthetic data generator. Subsequent development will implement the watchlist processing, network matching, claims analysis, validation, and automated reporting components.
+- Expanded watchlist validation.
+- Claims dataset generation.
+- Claims processing and aggregation.
+
+## Project Structure
+
+```text
+pharmacy-watchlist-capstone/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── output/
+├── src/
+│   ├── generators/
+│   └── validators/
+├── tests/
+├── .gitignore
+└── requirements.txt
+```
+
+Generated datasets and output files are excluded from version control.
+
+## Sample Outputs
+
+Screenshots of synthetic Excel workbooks will be added here as development progresses.
+
+## Development Roadmap
+
+1. Complete synthetic data generation and validation.
+2. Generate synthetic claims-level datasets.
+3. Implement claims filtering and business rules.
+4. Aggregate claim counts and total plan-paid amounts.
+5. Generate formatted Excel reports.
+6. Automate PowerPoint presentation generation.
+7. Expand automated testing and quality assurance.
