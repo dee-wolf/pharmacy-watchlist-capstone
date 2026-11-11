@@ -66,7 +66,19 @@ Generated datasets and output files are excluded from version control.
 
 ## Sample Outputs
 
-Screenshots of synthetic Excel workbooks will be added here as development progresses.
+### Monthly Pharmacy Watchlist
+
+![Synthetic monthly pharmacy watchlist](docs/screenshots/monthly_watchlist.png)
+
+### Pharmacy Enrollment Directory
+
+![Synthetic pharmacy enrollment directory](docs/screenshots/enrolled_pharmacies.png)
+
+### Validation Results
+
+![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
+
+
 
 ## Development Roadmap
 
