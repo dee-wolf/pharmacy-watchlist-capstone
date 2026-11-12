@@ -1,3 +1,5 @@
+from itertools import product
+
 pharmacy_names = ["Willow Creek",
     "Oak Street", "Maple Grove",
     "Cedar Valley", "Montagu Road",
@@ -21,3 +23,11 @@ pharmacy_types = ["Pharmacy",
     "Apothecary", "Drug",
     "Chemists", "Pharma",
     "Rx"]
+
+def generate_pharmacy_names():
+    combinations = list(product(pharmacy_names, pharmacy_types))
+    full_names = [
+        f"{pharmacy_name} {pharmacy_type}"
+        for pharmacy_name, pharmacy_type in combinations
+    ]
+    return full_names

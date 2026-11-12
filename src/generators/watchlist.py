@@ -1,9 +1,8 @@
 import pandas as pd
 import random
 from datetime import datetime
-from itertools import product
 from .enrollment import generate_enrollment
-from .name_parts import pharmacy_names, pharmacy_types
+from .name_parts import generate_pharmacy_names
 from .watchlist_reasons import watchlist_reasons, reason_weights
 from ..validators.watchlist_validator import validate_watchlist
 
@@ -29,7 +28,7 @@ def generate_watchlist(
         reporting_month = datetime.strptime(reporting_month, "%Y-%m")
     except ValueError:
         raise ValueError("Please use a valid month in YYYY-MM format.")
-    if num_pharmacies > len(pharmacy_names) * len(pharmacy_types):
+    if num_pharmacies > len(generate_pharmacy_names()):
         raise ValueError("Not enough unique pharmacy name combinations.")
     months = pd.date_range(end=reporting_month, periods=12, freq="MS")
     enrollment_df = generate_enrollment(participating_count)
@@ -37,8 +36,7 @@ def generate_watchlist(
     nonparticipating_count = num_pharmacies - participating_count
     nonparticipating_npis = [f"OUT-{i:06d}" for i in range(1, nonparticipating_count + 1)]
     all_npis = participating_npis + nonparticipating_npis
-    combinations = list(product(pharmacy_names, pharmacy_types))
-    full_names = [f"{pharmacy_name} {pharmacy_type}" for pharmacy_name, pharmacy_type in combinations]
+    full_names = generate_pharmacy_names()
     npi_rng = random.Random(seed)
     name_rng = random.Random(seed + 1)
     month_rng = random.Random(seed + 2)

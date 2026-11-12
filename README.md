@@ -50,15 +50,40 @@ The initial synthetic data generation phase is operational.
 
 ```text
 pharmacy-watchlist-capstone/
+│
 ├── data/
-│   ├── raw/
-│   └── processed/
-├── output/
+│   ├── raw/                    # Generated synthetic source datasets
+│   └── processed/              # Processed datasets
+│
+├── docs/
+│   └── screenshots/            # README screenshots and sample outputs
+│       ├── monthly_watchlist.png
+│       ├── enrolled_pharmacies.png
+│       ├── watchlist_validation.png
+│       └── claims_output.png
+│
+├── output/                     # Final report outputs
+│
 ├── src/
 │   ├── generators/
-│   └── validators/
-├── tests/
+│   │   ├── __init__.py
+│   │   ├── claims.py           # Synthetic claims data generator
+│   │   ├── enrollment.py       # Synthetic pharmacy enrollment generator
+│   │   ├── member_names.py     # Synthetic member name generator
+│   │   ├── name_parts.py       # Pharmacy name components and generation
+│   │   ├── watchlist.py        # Synthetic watchlist generator
+│   │   └── watchlist_reasons.py # Synthetic watchlist reasons and details
+│   │
+│   ├── validators/
+│   │   ├── __init__.py
+│   │   └── watchlist_validator.py
+│   │
+│   └── generate_data.py        # Main synthetic data generation entry point
+│
+├── tests/                      # Project tests
+│
 ├── .gitignore
+├── README.md
 └── requirements.txt
 ```
 
@@ -77,6 +102,13 @@ Generated datasets and output files are excluded from version control.
 ### Validation Results
 
 ![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
+
+### Synthetic Claims Output
+
+The generated Cognos-style claims export contains synthetic member names,
+pharmacy names, pharmacy NPIs, and total paid amounts.
+
+![Synthetic Claims Output](docs/screenshots/claims_data.png)
 
 
 ## Development Roadmap
