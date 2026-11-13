@@ -4,7 +4,9 @@
 
 The Pharmacy Watchlist Analytics Pipeline is a Python-based data analytics project designed to streamline the monthly process of identifying newly added pharmacies, determining network participation, and analyzing pharmacy claims activity.
 
-The project is modeled after a real-world healthcare analytics workflow and uses entirely synthetic data to demonstrate how Python and pandas can be applied to automate repetitive data preparation, data validation, aggregation, and reporting tasks. The goal is to reduce manual spreadsheet work, improve consistency, and create a more reproducible reporting process.
+The project is modeled after a real-world healthcare analytics workflow and uses entirely synthetic data to demonstrate how Python and pandas can be applied to automate repetitive data preparation, data validation, aggregation, and reporting tasks.
+
+The goal is to reduce manual spreadsheet work, improve consistency, and create a more reproducible reporting process.
 
 ## Project Objectives
 
@@ -19,17 +21,15 @@ This project aims to:
 
 ## Technology Stack
 
-- **Python** - Core programming language
+- **Python** – Core programming language
 - **Pandas** – Data manipulation, merging, and aggregation
 - **OpenPyXL** – Excel workbook processing
 - **Python-pptx** – PowerPoint report generation
 - **Git & GitHub** – Version control and project management
 
-## Current Implementation
+## Current Capabilities
 
-The initial synthetic data generation phase is operational.
-
-### Completed
+### Synthetic Data Generation
 
 - Configurable synthetic pharmacy enrollment directory generation.
 - Monthly pharmacy watchlist generation.
@@ -40,11 +40,31 @@ The initial synthetic data generation phase is operational.
 - Excel export of generated datasets.
 - Initial data-quality validation, including record counts, NPI uniqueness, and network participation counts.
 
-### In Progress
+### Claims Processing and Analytics
 
-- Expanded watchlist validation.
-- Claims dataset generation.
-- Claims processing and aggregation.
+- Loading synthetic Cognos claims exports from Excel.
+- Identifying and excluding `SB393 TEST` claims using normalized member names.
+- Aggregating eligible claims by Pharmacy Name and Pharmacy NPI.
+- Calculating claim counts and total plan-paid amounts.
+- Sorting pharmacy results by total plan-paid amount in descending order.
+- Reconciling aggregated claim counts against source claim records.
+- Reconciling aggregated financial totals against source claim amounts.
+- Matching watchlist pharmacies against the Medi-Cal enrollment directory.
+- Preserving all watchlist pharmacies through left joins, including pharmacies without claims activity.
+
+## Current Processing Workflow
+
+The project currently implements the following workflow:
+
+1. **Generate Synthetic Data:** Create fictional pharmacy watchlists, enrollment directories, member names, and claims records.
+2. **Load Claims Data:** Import the synthetic Cognos claims export into pandas.
+3. **Exclude Test Claims:** Normalize member names and remove records identified as `SB393 TEST`.
+4. **Aggregate Claims:** Group eligible claims by Pharmacy Name and Pharmacy NPI, calculating claim counts and total plan-paid amounts.
+5. **Reconcile Results:** Validate that aggregated claim counts and financial totals match the filtered source claims.
+6. **Match Enrollment:** Compare pharmacy NPIs against the Medi-Cal enrollment directory.
+7. **Merge Results:** Use left joins to preserve all pharmacies in the original watchlist, including pharmacies without matching claims records.
+
+The initial workflow retains manual Cognos report extraction. Python handles the downstream data processing and analysis.
 
 ## Project Structure
 
@@ -52,42 +72,58 @@ The initial synthetic data generation phase is operational.
 pharmacy-watchlist-capstone/
 │
 ├── data/
-│   ├── raw/                    # Generated synthetic source datasets
-│   └── processed/              # Processed datasets
+│   ├── raw/                     # Generated synthetic source datasets
+│   └── processed/               # Intermediate datasets
 │
 ├── docs/
-│   └── screenshots/            # README screenshots and sample outputs
+│   └── screenshots/             # README screenshots and sample outputs
 │       ├── monthly_watchlist.png
 │       ├── enrolled_pharmacies.png
 │       ├── watchlist_validation.png
 │       └── claims_output.png
 │
-├── output/                     # Final report outputs
+├── output/                      # Final reporting deliverables
 │
 ├── src/
 │   ├── generators/
 │   │   ├── __init__.py
-│   │   ├── claims.py           # Synthetic claims data generator
-│   │   ├── enrollment.py       # Synthetic pharmacy enrollment generator
-│   │   ├── member_names.py     # Synthetic member name generator
-│   │   ├── name_parts.py       # Pharmacy name components and generation
-│   │   ├── watchlist.py        # Synthetic watchlist generator
-│   │   └── watchlist_reasons.py # Synthetic watchlist reasons and details
+│   │   ├── claims.py
+│   │   ├── enrollment.py
+│   │   ├── member_names.py
+│   │   ├── name_parts.py
+│   │   ├── watchlist.py
+│   │   └── watchlist_reasons.py
+│   │
+│   ├── processors/
+│   │   ├── __init__.py
+│   │   ├── claims_processor.py
+│   │   └── watchlist_processor.py
 │   │
 │   ├── validators/
 │   │   ├── __init__.py
 │   │   └── watchlist_validator.py
 │   │
-│   └── generate_data.py        # Main synthetic data generation entry point
+│   └── generate_data.py
 │
-├── tests/                      # Project tests
+├── tests/
 │
 ├── .gitignore
 ├── README.md
 └── requirements.txt
 ```
 
-Generated datasets and output files are excluded from version control.
+### Directory Descriptions
+
+- **data/raw/** – Synthetic source datasets used to simulate monthly reporting inputs.
+- **data/processed/** – Intermediate datasets generated during processing.
+- **docs/screenshots/** – Visual examples of synthetic data and project outputs.
+- **output/** – Final reporting deliverables.
+- **src/generators/** – Modules responsible for generating synthetic source data.
+- **src/processors/** – Modules responsible for loading, filtering, merging, and aggregating datasets.
+- **src/validators/** – Data validation functions.
+- **tests/** – Project testing and quality assurance.
+
+Generated datasets and output files are excluded from version control to keep the repository focused on source code, documentation, and reproducible workflows.
 
 ## Sample Outputs
 
@@ -99,24 +135,27 @@ Generated datasets and output files are excluded from version control.
 
 ![Synthetic pharmacy enrollment directory](docs/screenshots/enrolled_pharmacies.png)
 
-### Validation Results
+### Watchlist Validation Results
 
 ![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
 
 ### Synthetic Claims Output
 
-The generated Cognos-style claims export contains synthetic member names,
-pharmacy names, pharmacy NPIs, and total paid amounts.
+The generated Cognos-style claims export contains synthetic member names, pharmacy names, pharmacy NPIs, and total paid amounts.
 
-![Synthetic Claims Output](docs/screenshots/claims_data.png)
+![Synthetic Claims Output](docs/screenshots/claims_output.png)
 
+## Upcoming Development
 
-## Development Roadmap
+1. Complete enrollment and claims integration, including identification of participating pharmacies with no claims activity.
+2. Apply appropriate zero-claim handling while preserving nonparticipating pharmacy status.
+3. Generate the final formatted Excel reporting workbook.
+4. Develop automated PowerPoint presentation generation.
+5. Expand automated testing and quality assurance.
+6. Improve processing documentation and reporting reproducibility.
 
-1. Complete synthetic data generation and validation.
-2. Generate synthetic claims-level datasets.
-3. Implement claims filtering and business rules.
-4. Aggregate claim counts and total plan-paid amounts.
-5. Generate formatted Excel reports.
-6. Automate PowerPoint presentation generation.
-7. Expand automated testing and quality assurance.
+## Data Privacy
+
+This project uses entirely synthetic data. No real pharmacy identifiers, member information, claims records, or protected health information are used.
+
+The project is intended for educational and portfolio demonstration purposes.
