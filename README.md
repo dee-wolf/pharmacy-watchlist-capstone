@@ -143,7 +143,7 @@ Generated datasets and output files are excluded from version control to keep th
 
 The generated Cognos-style claims export contains synthetic member names, pharmacy names, pharmacy NPIs, and total paid amounts.
 
-![Synthetic Claims Output](docs/screenshots/claims_output.png)
+![Synthetic Claims Data](docs/screenshots/claims_data.png)
 
 ## Upcoming Development
 
