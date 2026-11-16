@@ -29,13 +29,6 @@ def aggregate_claims(filtered_claims):
         print("Plan paid reconciliation passed!")
     return aggregated_claims
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
     loaded_claims = load_claims("data/raw/cognos_claims_minimal.xlsx")
     filtered_claims = exclude_test_claims(loaded_claims)
