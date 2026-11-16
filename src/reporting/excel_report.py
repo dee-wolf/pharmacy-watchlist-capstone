@@ -1,8 +1,9 @@
-import openpyxl
-
 import pandas as pd
+import sys
 from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment
+from datetime import datetime
+from time import strftime
 
 
 def filter_reporting_month(watchlist, reporting_month):
@@ -18,6 +19,17 @@ def filter_reporting_month(watchlist, reporting_month):
     )
     return filtered_watchlist
 
+column_widths = {
+    "A": 20,
+    "B": 50,
+    "C": 30,
+    "D": 30,
+    "E": 50,
+    "F": 25,
+    "G": 25,
+    "H": 50
+}
+
 def report_to_excel(dataframe, filepath):
     edited_report = dataframe[["NPI",
         "Pharmacy Name",
@@ -30,14 +42,8 @@ def report_to_excel(dataframe, filepath):
     edited_report.to_excel(filepath, index=False)
     workbook = load_workbook(filepath)
     worksheet = workbook.active
-    worksheet.column_dimensions["A"].width = 20
-    worksheet.column_dimensions["B"].width = 50
-    worksheet.column_dimensions["C"].width = 25
-    worksheet.column_dimensions["D"].width = 30
-    worksheet.column_dimensions["E"].width = 50
-    worksheet.column_dimensions["F"].width = 25
-    worksheet.column_dimensions["G"].width = 25
-    worksheet.column_dimensions["H"].width = 30
+    for column, width in column_widths.items():
+        worksheet.column_dimensions[column].width = width
     for cell in worksheet[1]:
        cell.font = Font(bold=True, color="FFFFFF")
        cell.fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
@@ -66,8 +72,17 @@ if __name__ == "__main__":
         merge_claims_with_watchlist,
         assign_final_status
     )
-
-    watchlist = generate_watchlist()
+    if len(sys.argv) < 2:
+        print("Please enter a month in the form of yyyy-mm to run the report.")
+        sys.exit()
+    reporting_month = sys.argv[1]
+    try:
+        reporting_month = datetime.strptime(reporting_month, "%Y-%m")
+    except ValueError:
+        print("Please enter the reporting month in yyyy-mm format.")
+        sys.exit()
+    reporting_month_str = reporting_month.strftime("%Y-%m")
+    watchlist = generate_watchlist(reporting_month=reporting_month_str)
     network = load_claims("data/raw/enrolled_pharmacies.xlsx")
     claims = load_claims("data/raw/cognos_claims_minimal.xlsx")
 
@@ -79,16 +94,14 @@ if __name__ == "__main__":
         enrollment_match, aggregated_claims
     )
     merged_watchlist = assign_final_status(merged_watchlist)
-
-    reporting_month = "2026-11-01"
-    november_report = filter_reporting_month(
+    monthly_report = filter_reporting_month(
         merged_watchlist, reporting_month
     )
-    report_to_excel(november_report, "output/pharmacy_watchlist_november_2026.xlsx")
+    report_to_excel(monthly_report, f"output/pharmacy_watchlist_{reporting_month_str}.xlsx")
 
-    print("\n--- NOVEMBER 2026 PROCESSED WATCHLIST ---")
+    print(f"\n--- {reporting_month_str} PROCESSED WATCHLIST ---")
     print(
-        november_report[
+        monthly_report[
             [
                 "NPI",
                 "Pharmacy Name",
@@ -99,4 +112,4 @@ if __name__ == "__main__":
         ].to_string(index=False)
     )
 
-    print(f"\nRecords in report: {len(november_report)}")
+    print(f"\nRecords in report: {len(monthly_report)}")
