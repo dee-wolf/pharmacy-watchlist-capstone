@@ -58,29 +58,16 @@ This project aims to:
 
 The workflow is designed around a monthly pharmacy watchlist review.
 
-\`\`\`text
-Synthetic Source Data
-        |
-        v
-Claims Cleaning & Filtering
-        |
-        v
-Claims Aggregation & Reconciliation
-        |
-        v
-Enrollment Matching
-        |
-        v
-Final Pharmacy Status Assignment
-        |
-        v
-Reporting-Month Filter
-        |
-        +--------------------+
-        |                    |
-        v                    v
-   Excel Report        PowerPoint Report
-\`\`\`
+```mermaid
+flowchart TD
+    A["Synthetic Source Data"] --> B["Claims Cleaning & Filtering"]
+    B --> C["Claims Aggregation & Reconciliation"]
+    C --> D["Enrollment Matching"]
+    D --> E["Final Pharmacy Status Assignment"]
+    E --> F["Reporting-Month Filter"]
+    F --> G["Excel Report"]
+    F --> H["PowerPoint Report"]
+```
 
 The initial workflow retains manual Cognos report extraction. Python handles the downstream data processing and reporting.
 
