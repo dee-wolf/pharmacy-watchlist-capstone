@@ -179,7 +179,7 @@ The presentation includes a reporting title slide, review summary, and paginated
 
 ## Project Structure
 
-\`\`\`text
+```text
 pharmacy-watchlist-capstone/
 │
 ├── data/
@@ -198,15 +198,13 @@ pharmacy-watchlist-capstone/
 │   ├── validators/                  # Data validation
 │   └── generate_data.py             # Synthetic data entry point
 │
-├── tests/                            # Project tests
-├── demo.py                           # Project demonstration
-├── orchestration.py                  # End-to-end workflow (in development)
+├── tests/                           # Project tests
+├── demo.py                          # Project demonstration
+├── orchestration.py                 # End-to-end workflow (in development)
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-\`\`\`
-
-Generated datasets and output files are excluded from version control. The repository focuses on source code, documentation, and reproducible workflows.
+```
 
 ---
 
