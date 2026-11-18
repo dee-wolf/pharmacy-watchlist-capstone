@@ -58,22 +58,31 @@ def add_review_summary_slide(slide_deck, monthly_report, reviewed_count, reporti
         headers = ["NPI", "Pharmacy Name", "State", "12 Month Plan Paid", "12 Month Claim Count", "Notes/Recommendations"]
         for index, header in enumerate(headers):
             pharm_table.cell(0, index).text = header
+            header_cell = pharm_table.cell(0, index)
+            header_cell.fill.solid()
+            header_cell.fill.fore_color.rgb = RGBColor(31, 78, 121)
+            for paragraph in header_cell.text_frame.paragraphs:
+                paragraph.runs[0].font.size = Pt(12)
+                paragraph.runs[0].font.bold = True
+                paragraph.runs[0].font.color.rgb = RGBColor(255, 255, 255)
+                paragraph.alignment = PP_ALIGN.CENTER
+        column_widths = [1.65, 2.25, 0.65, 1.45, 1.25, 4.58]
+        for index, width in enumerate(column_widths):
+            pharm_table.columns[index].width = Inches(width)
         for index, (row, pharmacy) in enumerate(current_five.iterrows(), start = 1):
+            plan_paid = pharmacy["12 Month Plan Paid"]
+            claim_count = pharmacy["12 Month Claim Count"]
             pharm_table.cell(index, 0).text = str(pharmacy["NPI"])
             pharm_table.cell(index, 1).text = str(pharmacy["Pharmacy Name"])
             pharm_table.cell(index, 2).text = "CA"
-            pharm_table.cell(index, 3).text = str(pharmacy["12 Month Plan Paid"])
-            pharm_table.cell(index, 4).text = str(pharmacy["12 Month Claim Count"])
+            pharm_table.cell(index, 3).text = f'${plan_paid:,.2f}'
+            pharm_table.cell(index, 4).text = str(int(claim_count))
             pharm_table.cell(index, 5).text = ""
+        for row in range(pharm_rows):
+            for column in range(pharm_cols):
+                pharm_table.cell(row, column).vertical_anchor = MSO_ANCHOR.MIDDLE
+                pharm_table.cell(row, column).text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
     return slide
-
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
     from src.generators.watchlist import generate_watchlist
@@ -89,38 +98,28 @@ if __name__ == "__main__":
         assign_final_status
     )
     from src.reporting.excel_report import filter_reporting_month
-
     reporting_month = datetime.strptime("2026-11", "%Y-%m")
-
     watchlist = generate_watchlist(
         reporting_month=reporting_month.strftime("%Y-%m")
     )
-
     claims = generate_claims(watchlist)
     network = load_claims("data/raw/enrolled_pharmacies.xlsx")
-
     filtered_claims = exclude_test_claims(claims)
     aggregated_claims = aggregate_claims(filtered_claims)
-
     enrollment_match = match_enrollment(watchlist, network)
     merged_watchlist = merge_claims_with_watchlist(
         enrollment_match, aggregated_claims
     )
     merged_watchlist = assign_final_status(merged_watchlist)
-
     monthly_report = filter_reporting_month(
         merged_watchlist, reporting_month
     )
-
     reviewed_count = len(monthly_report)
-
     presentation = create_presentation()
-
     add_review_summary_slide(
         presentation,
         monthly_report,
         reviewed_count,
         reporting_month
     )
-
     presentation.save("output/test_presentation.pptx")

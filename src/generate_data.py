@@ -9,7 +9,7 @@ from src.generators.enrollment import generate_enrollment
 from src.generators.claims import generate_claims
 
 
-def main():
+def generate_synthetic_data():
     print("Starting synthetic data generation...")
 
     print("\nGenerating synthetic pharmacy watchlist...")
@@ -25,7 +25,7 @@ def main():
     print(f"Generated {len(claims)} claims records.")
 
     print("\nSynthetic data generation complete!")
-
+    return watchlist, enrollment, claims
 
 if __name__ == "__main__":
-    main()
+    generate_synthetic_data()
