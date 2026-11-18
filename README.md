@@ -217,40 +217,40 @@ pharmacy-watchlist-capstone/
 
 ### 1. Clone the repository
 
-\`\`\`bash
+```bash
 git clone https://github.com/dee-wolf/pharmacy-watchlist-capstone.git
 cd pharmacy-watchlist-capstone
-\`\`\`
+```
 
 ### 2. Create and activate a virtual environment
 
 **Linux / WSL**
 
-\`\`\`bash
+```bash
 python -m venv .venv
 source .venv/bin/activate
-\`\`\`
+```
 
 **Windows PowerShell**
 
-\`\`\`powershell
+```powershell
 python -m venv .venv
 .venv\\Scripts\\Activate.ps1
-\`\`\`
+```
 
 ### 3. Install dependencies
 
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 ### 4. Create the working directories
 
 **Linux / WSL**
 
-\`\`\`bash
+```bash
 mkdir -p data/raw data/processed output
-\`\`\`
+```
 
 On Windows, create the same folders using File Explorer or your preferred terminal.
 
@@ -262,9 +262,9 @@ On Windows, create the same folders using File Explorer or your preferred termin
 
 From the repository root, with the virtual environment activated:
 
-\`\`\`bash
+```bash
 python -m src.generate_data
-\`\`\`
+```
 
 This runs the synthetic data generation workflow and writes the generated watchlist, enrollment directory, and claims dataset to `data/raw/`.
 
