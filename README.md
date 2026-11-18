@@ -1,169 +1,198 @@
-Pharmacy Watchlist Analytics Pipeline
+# Pharmacy Watchlist Analytics Pipeline
 
-Overview
+**A reproducible healthcare data analytics project built with Python, pandas, and automated reporting.**
 
-The Pharmacy Watchlist Analytics Pipeline is a Python-based data analytics project designed to streamline the monthly process of identifying newly added pharmacies, determining network participation, and analyzing pharmacy claims activity.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Pandas](https://img.shields.io/badge/Data-Pandas-150458?logo=pandas&logoColor=white)](https://pandas.pydata.org/)
+[![Excel](https://img.shields.io/badge/Reporting-Excel-217346?logo=microsoftexcel&logoColor=white)](https://openpyxl.readthedocs.io/)
+[![PowerPoint](https://img.shields.io/badge/Reporting-PowerPoint-B7472A?logo=microsoftpowerpoint&logoColor=white)](https://python-pptx.readthedocs.io/)
 
-The project is modeled after a real-world healthcare analytics workflow and uses entirely synthetic data to demonstrate how Python and pandas can be applied to automate repetitive data preparation, data validation, aggregation, and reporting tasks.
+The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analytics workflow: identify newly added pharmacies, determine network participation, analyze eligible pharmacy claims, and produce clear reporting deliverables.
 
-The goal is to reduce manual spreadsheet work, improve consistency, and create a more reproducible reporting process.
+The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-Project Objectives
+> **Project status:** Data generation, claims processing, Excel reporting, and core PowerPoint reporting are implemented. The single-command end-to-end orchestration workflow and final PowerPoint reference slide are still in development.
+
+---
+
+## Contents
+
+- [Project Goals](#project-goals)
+- [Technology Stack](#technology-stack)
+- [How It Works](#how-it-works)
+- [Current Capabilities](#current-capabilities)
+- [Sample Outputs](#sample-outputs)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Running the Project](#running-the-project)
+- [Development Roadmap](#development-roadmap)
+- [Data Privacy](#data-privacy)
+
+---
+
+## Project Goals
 
 This project aims to:
 
-Identify pharmacies added to a watchlist during a selected reporting month.
+- Identify pharmacies added to a watchlist during a selected reporting month.
+- Match pharmacy identifiers against an enrollment directory.
+- Process claims data and apply defined business rules.
+- Calculate claim counts and total plan-paid amounts by pharmacy.
+- Validate processing results through reconciliation checks.
+- Generate formatted Excel reports and PowerPoint presentations.
+- Build toward a reproducible, end-to-end analytics pipeline.
+
+## Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| **Python** | Core programming language |
+| **Pandas** | Data manipulation, joins, filtering, and aggregation |
+| **OpenPyXL** | Excel workbook generation and formatting |
+| **Python-pptx** | PowerPoint presentation generation |
+| **Git & GitHub** | Version control and project documentation |
+
+---
+
+## How It Works
+
+The workflow is designed around a monthly pharmacy watchlist review.
+
+\`\`\`text
+Synthetic Source Data
+        |
+        v
+Claims Cleaning & Filtering
+        |
+        v
+Claims Aggregation & Reconciliation
+        |
+        v
+Enrollment Matching
+        |
+        v
+Final Pharmacy Status Assignment
+        |
+        v
+Reporting-Month Filter
+        |
+        +--------------------+
+        |                    |
+        v                    v
+   Excel Report        PowerPoint Report
+\`\`\`
+
+The initial workflow retains manual Cognos report extraction. Python handles the downstream data processing and reporting.
+
+### Processing sequence
 
-Determine pharmacy participation by matching pharmacy identifiers against an enrollment directory.
+1. **Generate synthetic data** — Create a pharmacy watchlist, enrollment directory, and Cognos-style claims dataset.
+2. **Exclude test claims** — Normalize member names and remove records identified as `SB393 TEST`.
+3. **Aggregate claims** — Group eligible claims by Pharmacy Name and Pharmacy NPI; calculate claim counts and total plan-paid amounts.
+4. **Reconcile results** — Confirm aggregated claim counts and financial totals match the filtered source claims.
+5. **Match enrollment** — Compare pharmacy NPIs against the enrollment directory while preserving all watchlist records.
+6. **Assign final statuses** — Distinguish nonparticipating pharmacies, participating pharmacies with claims, and participating pharmacies without eligible claims.
+7. **Filter the reporting month** — Select pharmacies added during the requested month.
+8. **Generate deliverables** — Produce a formatted Excel report and a PowerPoint presentation.
 
-Prepare pharmacy identifiers and reporting dates for claims extraction.
+---
 
-Process claims data, apply business rules, and calculate claim counts and total plan-paid amounts.
+## Current Capabilities
 
-Generate structured Excel reports and client-facing PowerPoint presentations.
+### Synthetic Data Generation
 
-Incorporate data validation and quality checks to improve reporting accuracy.
+- Generates synthetic pharmacy enrollment, watchlist, and claims datasets.
+- Uses fictional pharmacy names and test identifiers.
+- Supports configurable watchlist reasons and review details.
+- Uses configurable random seeds for reproducible test data.
+- Exports generated datasets to Excel.
+- Performs initial data-quality checks, including record counts, NPI uniqueness, and network participation counts.
+- Provides a centralized `generate_synthetic_data()` function that returns the watchlist, enrollment, and claims DataFrames for downstream use.
 
-Develop a reproducible, end-to-end analytics pipeline.
+### Claims Processing & Analytics
 
-Technology Stack
+- Loads synthetic Cognos claims exports from Excel in the file-based processing workflow.
+- Normalizes member names and excludes `SB393 TEST` records.
+- Aggregates eligible claims by Pharmacy Name and Pharmacy NPI.
+- Calculates claim counts and total plan-paid amounts.
+- Sorts pharmacy results by plan-paid amount in descending order.
+- Reconciles aggregated claim counts against source claim records.
+- Reconciles aggregated financial totals against source claim amounts.
 
-Python – Core programming language
+### Enrollment & Watchlist Processing
 
-Pandas – Data manipulation, merging, and aggregation
+- Matches pharmacy NPIs against the enrollment directory.
+- Uses left joins to preserve all pharmacies from the original watchlist.
+- Identifies participating pharmacies with no eligible claims.
+- Assigns final statuses:
+  - Participating - Has Claims
+  - Participating - No Claims
+  - Not Participating
+- Preserves blank claim metrics for nonparticipating pharmacies.
+- Assigns zero claim counts and zero plan-paid amounts to participating pharmacies with no eligible claims.
 
-OpenPyXL – Excel workbook processing and formatting
+### Excel Reporting
 
-Python-pptx – PowerPoint report generation
+- Filters the processed watchlist to the selected reporting month.
+- Supports dynamic reporting-month selection.
+- Sorts by 12-month Plan Paid in descending order.
+- Positions nonparticipating pharmacies at the bottom of the report.
+- Selects client-facing columns and excludes internal processing fields.
+- Applies custom column widths, styled headers, currency and date formatting.
+- Freezes the header row and enables column filters.
 
-Git & GitHub – Version control and project management
+### PowerPoint Reporting
 
-Current Capabilities
+- Generates a presentation with a reporting-month title slide.
+- Creates a review summary showing the number of pharmacies reviewed and the number overlapping with the enrollment directory.
+- Limits pharmacy tables to enrollment-matched pharmacies.
+- Paginates tables with up to five pharmacies per slide.
+- Applies custom column widths, navy headers, white header text, and alternating row shading.
+- Formats plan-paid amounts as currency and claim counts as whole numbers.
+- Centers table content horizontally and vertically.
+- Includes a Notes/Recommendations column for review findings.
 
-Synthetic Data Generation
+---
 
-Configurable synthetic pharmacy enrollment directory generation.
+## Sample Outputs
 
-Monthly pharmacy watchlist generation.
+The following screenshots use synthetic data and illustrate the project's inputs, processing checks, and reporting outputs.
 
-Synthetic pharmacy names and test identifiers.
+### 1. Monthly Pharmacy Watchlist
 
-Configurable watchlist reasons and associated review details.
+![Synthetic monthly pharmacy watchlist](docs/screenshots/monthly_watchlist.png)
 
-Weighted random selection of watchlist categories.
+### 2. Pharmacy Enrollment Directory
 
-Reproducible data generation using configurable random seeds.
+![Synthetic pharmacy enrollment directory](docs/screenshots/enrolled_pharmacies.png)
 
-Excel export of generated datasets.
+### 3. Watchlist Validation
 
-Initial data-quality validation, including record counts, NPI uniqueness, and network participation counts.
+![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
 
-Centralized synthetic data generation through generate_synthetic_data().
+### 4. Synthetic Claims Data
 
-Returns generated watchlist, enrollment, and claims DataFrames for downstream processing.
+The generated Cognos-style claims export contains synthetic member names, pharmacy names, pharmacy NPIs, and total paid amounts.
 
-Claims Processing and Analytics
+![Synthetic claims data](docs/screenshots/claims_data.png)
 
-Loading synthetic Cognos claims exports from Excel.
+### 5. Processed Pharmacy Watchlist — Excel
 
-Identifying and excluding SB393 TEST claims using normalized member names.
+The final workbook contains pharmacies added during the selected reporting month, with enrollment and claims results, claim counts, and total plan-paid amounts.
 
-Aggregating eligible claims by Pharmacy Name and Pharmacy NPI.
+![Formatted pharmacy watchlist report](docs/screenshots/processed_watchlist.png)
 
-Calculating claim counts and total plan-paid amounts.
+### 6. PowerPoint Reporting Presentation
 
-Sorting pharmacy results by total plan-paid amount in descending order.
+The presentation includes a reporting title slide, review summary, and paginated pharmacy tables.
 
-Reconciling aggregated claim counts against source claim records.
+![PowerPoint reporting presentation](docs/screenshots/powerpoint_example.png)
 
-Reconciling aggregated financial totals against source claim amounts.
+---
 
-Matching watchlist pharmacies against the Medi-Cal enrollment directory.
+## Project Structure
 
-Preserving all watchlist pharmacies through left joins, including pharmacies without claims activity.
-
-Identifying participating pharmacies with no eligible claims.
-
-Assigning final pharmacy statuses based on enrollment and claims results.
-
-Preserving blank claim metrics for nonparticipating pharmacies while assigning zero metrics to participating pharmacies with no eligible claims.
-
-Excel Reporting
-
-Filtering the processed watchlist to pharmacies added during the selected reporting month.
-
-Supporting dynamic reporting-month selection.
-
-Sorting the final report by 12-month Plan Paid in descending order.
-
-Positioning nonparticipating pharmacies at the bottom of the report.
-
-Selecting client-facing report columns while excluding internal processing fields.
-
-Exporting the final reporting dataset to Excel.
-
-Applying custom column widths and styled headers.
-
-Formatting Plan Paid values as currency.
-
-Formatting reporting dates for readability.
-
-Freezing the header row for easier navigation.
-
-Enabling column filters across the reporting dataset.
-
-PowerPoint Reporting
-
-Automated PowerPoint presentation creation using Python-pptx.
-
-Dynamic title slide generation based on the reporting month.
-
-Summary slide displaying the total number of pharmacies reviewed and the number overlapping with the Medi-Cal enrollment directory.
-
-Pharmacy tables limited to participating pharmacies.
-
-Paginated pharmacy tables, displaying up to five pharmacies per slide.
-
-Custom column widths and styled navy headers with white text.
-
-Alternating row shading for readability.
-
-Currency formatting for Plan Paid and whole-number claim counts.
-
-Horizontal and vertical text alignment for table cells.
-
-Dedicated Notes/Recommendations column for additional review findings.
-
-Current Processing Workflow
-
-The project currently implements the following workflow:
-
-Generate Synthetic Data: Create fictional pharmacy watchlists, enrollment directories, member names, and claims records.
-
-Load Claims Data: Import the synthetic Cognos claims export into pandas when using the file-based processing workflow.
-
-Exclude Test Claims: Normalize member names and remove records identified as SB393 TEST.
-
-Aggregate Claims: Group eligible claims by Pharmacy Name and Pharmacy NPI, calculating claim counts and total plan-paid amounts.
-
-Reconcile Results: Validate that aggregated claim counts and financial totals match the filtered source claims.
-
-Match Enrollment: Compare pharmacy NPIs against the Medi-Cal enrollment directory.
-
-Merge Results: Use left joins to preserve all pharmacies in the original watchlist, including pharmacies without matching claims records.
-
-Assign Final Status: Distinguish between nonparticipating pharmacies, participating pharmacies with claims, and participating pharmacies without eligible claims.
-
-Filter Reporting Month: Identify pharmacies added during the selected reporting month.
-
-Generate Excel Report: Export a client-facing workbook with formatted columns, currency values, date formatting, filters, and a frozen header row.
-
-Generate PowerPoint Report: Create a presentation containing a reporting title, review summary, and paginated pharmacy tables.
-
-The initial workflow retains manual Cognos report extraction. Python handles the downstream data processing and analysis.
-
-Project Structure
-
+\`\`\`text
 pharmacy-watchlist-capstone/
 │
 ├── data/
@@ -172,163 +201,116 @@ pharmacy-watchlist-capstone/
 │
 ├── docs/
 │   └── screenshots/                 # README screenshots and sample outputs
-│       ├── monthly_watchlist.png
-│       ├── enrolled_pharmacies.png
-│       ├── watchlist_validation.png
-│       ├── claims_output.png
-│       └── processed_watchlist.png
 │
-├── output/                          # Final reporting deliverables
+├── output/                          # Generated reporting deliverables
 │
 ├── src/
-│   ├── generators/
-│   │   ├── __init__.py
-│   │   ├── claims.py
-│   │   ├── enrollment.py
-│   │   ├── member_names.py
-│   │   ├── name_parts.py
-│   │   ├── watchlist.py
-│   │   └── watchlist_reasons.py
-│   │
-│   ├── processors/
-│   │   ├── __init__.py
-│   │   ├── claims_processor.py
-│   │   └── watchlist_processor.py
-│   │
-│   ├── reporting/
-│   │   ├── __init__.py
-│   │   ├── excel_report.py
-│   │   └── powerpoint_report.py
-│   │
-│   ├── validators/
-│   │   ├── __init__.py
-│   │   └── watchlist_validator.py
-│   │
-│   └── generate_data.py
+│   ├── generators/                  # Synthetic data generation
+│   ├── processors/                  # Claims and watchlist processing
+│   ├── reporting/                   # Excel and PowerPoint reporting
+│   ├── validators/                  # Data validation
+│   └── generate_data.py             # Synthetic data entry point
 │
-├── tests/
-│
-├── demo.py                          # Project demonstration
-├── orchestration.py                 # End-to-end pipeline (in development)
-├── .gitignore
+├── tests/                            # Project tests
+├── demo.py                           # Project demonstration
+├── orchestration.py                  # End-to-end workflow (in development)
+├── requirements.txt
 ├── README.md
-└── requirements.txt
+└── .gitignore
+\`\`\`
 
-Directory Descriptions
+Generated datasets and output files are excluded from version control. The repository focuses on source code, documentation, and reproducible workflows.
 
-data/raw/ – Synthetic source datasets used to simulate monthly reporting inputs.
+---
 
-data/processed/ – Intermediate datasets generated during processing.
+## Getting Started
 
-docs/screenshots/ – Visual examples of synthetic data and project outputs.
+### Prerequisites
 
-output/ – Final reporting deliverables.
+- Python 3.10 or newer
+- Git
 
-src/generators/ – Modules responsible for generating synthetic source data.
+### 1. Clone the repository
 
-src/processors/ – Modules responsible for loading, filtering, merging, and aggregating datasets.
-
-src/reporting/ – Modules responsible for generating and formatting reporting deliverables.
-
-src/validators/ – Data validation functions.
-
-tests/ – Project testing and quality assurance.
-
-demo.py – Demonstrates the project's capabilities.
-
-orchestration.py – Intended to coordinate the complete reporting workflow from synthetic data generation through final deliverable creation. Currently under development.
-
-Generated datasets and output files are excluded from version control to keep the repository focused on source code, documentation, and reproducible workflows.
-
-Getting Started
-
-Prerequisites
-
-Python 3.10 or newer
-
-Git
-
-Clone the Repository
-
+\`\`\`bash
 git clone https://github.com/dee-wolf/pharmacy-watchlist-capstone.git
 cd pharmacy-watchlist-capstone
+\`\`\`
 
-Create a Virtual Environment
+### 2. Create and activate a virtual environment
 
+**Linux / WSL**
+
+\`\`\`bash
 python -m venv .venv
-
-Activate the environment:
-
-Linux / WSL:
-
 source .venv/bin/activate
+\`\`\`
 
-Windows:
+**Windows PowerShell**
 
-.venv\Scripts\activate
+\`\`\`powershell
+python -m venv .venv
+.venv\\Scripts\\Activate.ps1
+\`\`\`
 
-Install Dependencies
+### 3. Install dependencies
 
+\`\`\`bash
 pip install -r requirements.txt
+\`\`\`
 
-Create Project Directories
+### 4. Create the working directories
 
+**Linux / WSL**
+
+\`\`\`bash
 mkdir -p data/raw data/processed output
+\`\`\`
 
-Generate Synthetic Data
+On Windows, create the same folders using File Explorer or your preferred terminal.
 
+---
+
+## Running the Project
+
+### Generate synthetic data
+
+From the repository root, with the virtual environment activated:
+
+\`\`\`bash
 python -m src.generate_data
+\`\`\`
 
-This generates synthetic watchlist, enrollment, and claims datasets in data/raw/.
+This runs the synthetic data generation workflow and writes the generated watchlist, enrollment directory, and claims dataset to `data/raw/`.
 
-The full end-to-end orchestration workflow is currently under development.
+### Reporting modules
 
-## Sample Outputs
+The Excel and PowerPoint reporting modules can also be run independently while the end-to-end orchestration workflow is being completed. Refer to each module's current command-line interface and arguments.
 
-### Monthly Pharmacy Watchlist
+### End-to-end orchestration
 
-![Synthetic monthly pharmacy watchlist](docs/screenshots/monthly_watchlist.png)
+The `orchestration.py` entry point is being developed to coordinate data generation, processing, and report creation in one run. It is not yet documented as a completed one-command workflow.
 
-### Pharmacy Enrollment Directory
+---
 
-![Synthetic pharmacy enrollment directory](docs/screenshots/enrolled_pharmacies.png)
+## Development Roadmap
 
-### Watchlist Validation Results
+- [x] Synthetic watchlist, enrollment, and claims data generation
+- [x] Claims filtering and aggregation
+- [x] Claim-count and plan-paid reconciliation
+- [x] Enrollment matching and final status assignment
+- [x] Dynamic reporting-month filtering
+- [x] Formatted Excel report generation
+- [x] PowerPoint title, summary, and paginated pharmacy tables
+- [ ] Complete the end-to-end orchestration workflow
+- [ ] Add the PowerPoint definitions and reference slide
+- [ ] Expand automated testing and quality assurance
+- [ ] Perform a fresh-clone test of the complete workflow and README instructions
 
-![Successful watchlist validation](docs/screenshots/watchlist_validation.png)
+---
 
-### Synthetic Claims Output
+## Data Privacy
 
-The generated Cognos-style claims export contains synthetic member names, pharmacy names, pharmacy NPIs, and total paid amounts.
-
-![Synthetic Claims Data](docs/screenshots/claims_data.png)
-
-### Processed Pharmacy Watchlist Report
-
-The final Excel report contains pharmacies added during the selected reporting month, with enrollment and claims results, claim counts, and total plan-paid amounts.
-
-The workbook includes formatted headers, currency formatting, date formatting, column filters, and a frozen header row.
-
-![Formatted pharmacy watchlist report](docs/screenshots/processed_watchlist.png)
-
-PowerPoint Reporting Presentation
-
-The generated PowerPoint presentation includes a reporting title slide, review summary, and paginated pharmacy tables.
-
-The pharmacy tables include enrollment-matched pharmacies, claim counts, plan-paid amounts, and space for notes and recommendations.
-
-![PowerPoint Reporting Presentation](docs/screenshots/powerpoint_example.png)
-
-Upcoming Development
-
-- Complete orchestration.py to coordinate synthetic data generation, claims processing, enrollment matching, and report generation through a single entry point.
-- Complete the PowerPoint presentation, including the definitions and reference slide.
-- Expand automated testing and quality assurance.
-- Improve processing documentation and reporting reproducibility.
-- Perform a fresh-clone test to validate the complete setup and execution process.
-
-Data Privacy
-
-This project uses entirely synthetic data. No real pharmacy identifiers, member information, claims records, or protected health information are used.
+This project uses **entirely synthetic data**. No real pharmacy identifiers, member information, claims records, or protected health information are used.
 
 The project is intended for educational and portfolio demonstration purposes.
