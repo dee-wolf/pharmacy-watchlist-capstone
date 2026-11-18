@@ -1,5 +1,4 @@
 from enum import unique
-
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
@@ -34,28 +33,38 @@ def add_review_summary_slide(slide_deck, monthly_report, reviewed_count, reporti
     boilerplate = f'We reviewed all {reviewed_count} pharmacies added to the Prime Watch List in {reviewing_month_str} for overlap with\nMedi-Cal enrolled pharmacies, {unique_pharmacies} unique pharmacies were identified.'
     slide = slide_deck.slides.add_slide(slide_deck.slide_layouts[6])
     summary_box = slide.shapes.add_textbox(left=Inches(0.75), top=Inches(0.75), width=Inches(11.83), height=Inches(1.5))
-    summary_box.text_frame.text=boilerplate
+    summary_box.text_frame.text = boilerplate
     for paragraph in summary_box.text_frame.paragraphs:
         paragraph.alignment = PP_ALIGN.LEFT
         paragraph.runs[0].font.size = Pt(18)
         paragraph.runs[0].font.color.rgb = RGBColor(31, 78, 121)
     summary_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-    pharm_rows = len(matched_pharmacies) + 1
-    pharm_cols = 6
-    pharm_table = slide.shapes.add_table(pharm_rows, pharm_cols, left=Inches(0.75), top=Inches(2.5), width=Inches(11.83), height=Inches(4.5)).table
-    headers = ["NPI", "Pharmacy Name", "State", "12 Month Plan Paid", "12 Month Claim Count", "Notes/Recommendations"]
-    for index, header in enumerate(headers):
-        pharm_table.cell(0, index).text = header
-
-
-
-
-
-
-
-
-
-
+    for start in range(0, len(matched_pharmacies), 5):
+        current_five = matched_pharmacies.iloc[start:start + 5]
+        if start == 0:
+            pass
+        else:
+            slide = slide_deck.slides.add_slide(slide_deck.slide_layouts[6])
+            continuation_box = slide.shapes.add_textbox(left=Inches(0.75), top=Inches(0.75), width=Inches(11.83), height=Inches(1.5))
+            continuation_box.text_frame.text = "Pharmacies added to Watchlist: Continued"
+            for paragraph in continuation_box.text_frame.paragraphs:
+                paragraph.alignment = PP_ALIGN.LEFT
+                paragraph.runs[0].font.size = Pt(18)
+                paragraph.runs[0].font.color.rgb = RGBColor(31, 78, 121)
+            continuation_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+        pharm_rows = len(current_five) + 1
+        pharm_cols = 6
+        pharm_table = slide.shapes.add_table(pharm_rows, pharm_cols, left=Inches(0.75), top=Inches(2.5), width=Inches(11.83), height=Inches(3.8)).table
+        headers = ["NPI", "Pharmacy Name", "State", "12 Month Plan Paid", "12 Month Claim Count", "Notes/Recommendations"]
+        for index, header in enumerate(headers):
+            pharm_table.cell(0, index).text = header
+        for index, (row, pharmacy) in enumerate(current_five.iterrows(), start = 1):
+            pharm_table.cell(index, 0).text = str(pharmacy["NPI"])
+            pharm_table.cell(index, 1).text = str(pharmacy["Pharmacy Name"])
+            pharm_table.cell(index, 2).text = "CA"
+            pharm_table.cell(index, 3).text = str(pharmacy["12 Month Plan Paid"])
+            pharm_table.cell(index, 4).text = str(pharmacy["12 Month Claim Count"])
+            pharm_table.cell(index, 5).text = ""
     return slide
 
 
