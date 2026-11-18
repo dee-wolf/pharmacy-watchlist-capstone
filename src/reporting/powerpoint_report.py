@@ -31,7 +31,7 @@ def add_review_summary_slide(slide_deck, monthly_report, reviewed_count, reporti
     matched_pharmacies = monthly_report[monthly_report["Final Status"] != "Not Participating"]
     unique_pharmacies = len(matched_pharmacies)
     reviewing_month_str = reporting_month.strftime("%B, %Y")
-    boilerplate = f'We reviewed all {reviewed_count} pharmacies added to the Prime Watch List in {reviewing_month_str} for overlap with Medi-Cal enrolled pharmacies, \n{unique_pharmacies} unique pharmacies were identified.'
+    boilerplate = f'We reviewed all {reviewed_count} pharmacies added to the Prime Watch List in {reviewing_month_str} for overlap with\nMedi-Cal enrolled pharmacies, {unique_pharmacies} unique pharmacies were identified.'
     slide = slide_deck.slides.add_slide(slide_deck.slide_layouts[6])
     summary_box = slide.shapes.add_textbox(left=Inches(0.75), top=Inches(0.75), width=Inches(11.83), height=Inches(1.5))
     summary_box.text_frame.text=boilerplate
@@ -40,6 +40,22 @@ def add_review_summary_slide(slide_deck, monthly_report, reviewed_count, reporti
         paragraph.runs[0].font.size = Pt(18)
         paragraph.runs[0].font.color.rgb = RGBColor(31, 78, 121)
     summary_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+    pharm_rows = len(matched_pharmacies) + 1
+    pharm_cols = 6
+    pharm_table = slide.shapes.add_table(pharm_rows, pharm_cols, left=Inches(0.75), top=Inches(2.5), width=Inches(11.83), height=Inches(4.5)).table
+    headers = ["NPI", "Pharmacy Name", "State", "12 Month Plan Paid", "12 Month Claim Count", "Notes/Recommendations"]
+    for index, header in enumerate(headers):
+        pharm_table.cell(0, index).text = header
+
+
+
+
+
+
+
+
+
+
     return slide
 
 
