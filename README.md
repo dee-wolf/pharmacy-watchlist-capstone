@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Data generation, claims processing, Excel reporting, and core PowerPoint reporting are implemented. The single-command end-to-end orchestration workflow and final PowerPoint reference slide are still in development.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and initial automated testing are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -25,6 +25,7 @@ The project uses **entirely synthetic data** to demonstrate how Python can reduc
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [Running the Project](#running-the-project)
+- [Testing](#testing)
 - [Development Roadmap](#development-roadmap)
 - [Data Privacy](#data-privacy)
 
@@ -40,7 +41,8 @@ This project aims to:
 - Calculate claim counts and total plan-paid amounts by pharmacy.
 - Validate processing results through reconciliation checks.
 - Generate formatted Excel reports and PowerPoint presentations.
-- Build toward a reproducible, end-to-end analytics pipeline.
+- Run the complete synthetic workflow through a single command.
+- Verify core processing behavior with automated tests.
 
 ## Technology Stack
 
@@ -138,6 +140,7 @@ The initial workflow retains manual Cognos report extraction. Python handles the
 - Formats plan-paid amounts as currency and claim counts as whole numbers.
 - Centers table content horizontally and vertically.
 - Includes a Notes/Recommendations column for review findings.
+- Appends a definitions/reference slide after the pharmacy tables.
 
 ---
 
@@ -198,9 +201,12 @@ pharmacy-watchlist-capstone/
 │   ├── validators/                  # Data validation
 │   └── generate_data.py             # Synthetic data entry point
 │
-├── tests/                           # Project tests
+├── tests/                           # Automated tests
+│   ├── __init__.py
+│   └── test_claims_processor.py
 ├── demo.py                          # Project demonstration
-├── orchestration.py                 # End-to-end workflow (in development)
+├── orchestration.py                 # End-to-end workflow entry point
+├── pytest.ini                       # Pytest configuration
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -274,7 +280,38 @@ The Excel and PowerPoint reporting modules can also be run independently while t
 
 ### End-to-end orchestration
 
-The `orchestration.py` entry point is being developed to coordinate data generation, processing, and report creation in one run. It is not yet documented as a completed one-command workflow.
+Run the complete synthetic workflow from the repository root:
+
+```bash
+python orchestration.py 2026-11
+```
+
+Pass the reporting month as `YYYY-MM`. The orchestration entry point generates the synthetic watchlist, enrollment directory, and claims data; performs enrollment matching, claims filtering and aggregation, and reconciliation; filters the selected reporting month; and creates both reporting deliverables in `output/`:
+
+- `pharmacy_watchlist_2026-11.xlsx`
+- `pharmacy_watchlist_2026-11.pptx`
+
+The filenames use the reporting month supplied to the command. The workflow uses generated synthetic data and does not automate extraction from Cognos; the initial workflow retains manual Cognos report extraction for a real-data process.
+
+---
+
+## Testing
+
+The project uses **pytest** for automated tests. The repository includes a project-level `pytest.ini` that directs test discovery to the `tests/` directory and configures the repository root on the Python import path.
+
+Run the test suite from the repository root with the virtual environment activated:
+
+```bash
+pytest -v
+```
+
+The initial unit test covers `exclude_test_claims()` and verifies that ordinary member claims are retained while `SB393 TEST` records are removed regardless of surrounding whitespace or letter case.
+
+The initial test suite is intentionally small and will expand to cover claims aggregation, enrollment matching, watchlist status assignment, and reporting behavior.
+
+### Clean-room workflow check
+
+The synthetic end-to-end workflow was manually verified after clearing the generated files from `data/raw/` and `output/`. Running `python orchestration.py 2026-11` regenerated the synthetic source workbooks and both reporting deliverables, with claim-count and plan-paid reconciliation checks passing. This verifies regeneration within the existing development environment; it is not a fresh-machine installation test.
 
 ---
 
@@ -286,11 +323,12 @@ The `orchestration.py` entry point is being developed to coordinate data generat
 - [x] Enrollment matching and final status assignment
 - [x] Dynamic reporting-month filtering
 - [x] Formatted Excel report generation
-- [x] PowerPoint title, summary, and paginated pharmacy tables
-- [ ] Complete the end-to-end orchestration workflow
-- [ ] Add the PowerPoint definitions and reference slide
-- [ ] Expand automated testing and quality assurance
-- [ ] Perform a fresh-clone test of the complete workflow and README instructions
+- [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
+- [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
+- [x] Initial pytest setup and first claims-filtering unit test
+- [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
+- [ ] Expand automated tests for processors, validators, generators, and reporting
+- [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
 
