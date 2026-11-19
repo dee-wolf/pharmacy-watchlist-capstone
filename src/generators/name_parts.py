@@ -15,7 +15,7 @@ pharmacy_names = ["Willow Creek",
     "Lone Tree", "Chegg",
     "Number One", "Number Two",
     "Footbath", "Wheaton's",
-    "The Last"]
+    "The Last", "Nicky"]
 
 pharmacy_types = ["Pharmacy",
     "Drugstore", "Community Pharmacy",
