@@ -3,7 +3,6 @@ import sys
 from openpyxl import load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from datetime import datetime
-from time import strftime
 
 
 def filter_reporting_month(watchlist, reporting_month):
