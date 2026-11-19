@@ -11,6 +11,15 @@ def exclude_test_claims(loaded_claims):
     return filtered_claims
 
 def aggregate_claims(filtered_claims):
+    payment_amounts = pd.to_numeric(filtered_claims["Total Paid Amount"], errors="coerce")
+    if payment_amounts.isna().any():
+        raise ValueError("A Paid Amount is missing or invalid in the data.")
+    if (payment_amounts < 0).any():
+        raise ValueError("Negative Paid Amount found even though reversals and adjustments are already excluded.")
+    filtered_claims = filtered_claims.copy()
+    filtered_claims["Total Paid Amount"] = payment_amounts
+    if filtered_claims.groupby("Pharmacy NPI")["Pharmacy Name"].nunique().gt(1).any():
+        raise ValueError("One NPI associated with multiple pharmacies.")
     grouped_claims = filtered_claims.groupby(["Pharmacy Name", "Pharmacy NPI"])
     aggregated_claims = grouped_claims.agg(Claim_Count=("Pharmacy NPI", "size"), Plan_Paid=("Total Paid Amount", "sum"))
     aggregated_claims = aggregated_claims.reset_index()
