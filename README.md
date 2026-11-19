@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and initial automated testing are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 12-test claims-processor suite are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -52,6 +52,7 @@ This project aims to:
 | **Pandas** | Data manipulation, joins, filtering, and aggregation |
 | **OpenPyXL** | Excel workbook generation and formatting |
 | **Python-pptx** | PowerPoint presentation generation |
+| **Pytest** | Automated unit testing and regression coverage |
 | **Git & GitHub** | Version control and project documentation |
 
 ---
@@ -107,6 +108,10 @@ The initial workflow retains manual Cognos report extraction. Python handles the
 - Sorts pharmacy results by plan-paid amount in descending order.
 - Reconciles aggregated claim counts against source claim records.
 - Reconciles aggregated financial totals against source claim amounts.
+- Converts numeric-string payment values to numeric types before aggregation.
+- Rejects missing or non-numeric payment amounts and negative payments.
+- Validates that each pharmacy NPI maps to only one pharmacy name, while allowing one pharmacy name to have multiple NPIs.
+- Preserves the original input DataFrame during payment normalization.
 
 ### Enrollment & Watchlist Processing
 
@@ -305,9 +310,22 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The initial unit test covers `exclude_test_claims()` and verifies that ordinary member claims are retained while `SB393 TEST` records are removed regardless of surrounding whitespace or letter case.
+The current suite contains **12 automated tests** across `exclude_test_claims()` and `aggregate_claims()`.
 
-The initial test suite is intentionally small and will expand to cover claims aggregation, enrollment matching, watchlist status assignment, and reporting behavior.
+Claims-filtering tests verify that ordinary member claims are retained, `SB393 TEST` records are excluded regardless of surrounding whitespace or letter case, and the original input DataFrame remains unchanged.
+
+Claims-aggregation tests cover:
+
+- Correct grouping by pharmacy name and NPI, claim counts, plan-paid totals, and descending sort order.
+- Zero-dollar claims and empty input DataFrames.
+- Rejection of missing or non-numeric payment amounts.
+- Conversion of numeric strings to numeric values before aggregation.
+- Rejection of negative payment amounts, which should not appear because reversals and adjustments are excluded upstream.
+- Rejection of an NPI associated with multiple pharmacy names.
+- Acceptance of one pharmacy name associated with multiple NPIs.
+- Preservation of the original input DataFrame during processing.
+
+Run `pytest -v` from the repository root to execute all tests. Enrollment/watchlist processor and reporting tests remain future work.
 
 ### Clean-room workflow check
 
@@ -325,9 +343,9 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Initial pytest setup and first claims-filtering unit test
+- [x] Pytest setup and 12 claims-processor unit tests covering filtering, aggregation, financial data validation, NPI/name integrity, and input preservation
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
-- [ ] Expand automated tests for processors, validators, generators, and reporting
+- [ ] Add automated tests for watchlist/enrollment processing, validators, generators, and reporting
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
