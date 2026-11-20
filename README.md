@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 26-test suite covering claims processing, watchlist processing, and watchlist validation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 36-test suite covering claims processing, watchlist processing, watchlist validation, and enrollment generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -312,7 +312,7 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The current suite contains **26 automated tests** across the claims processor, watchlist processor, and watchlist validator.
+The current suite contains **36 automated tests** across the claims processor, watchlist processor, watchlist validator, and enrollment generator.
 
 ### Claims processor tests — 12 tests
 
@@ -358,7 +358,20 @@ Tests for `validate_watchlist()` verify:
 - An incorrect participating pharmacy count raises `ValueError`.
 - An incorrect nonparticipating pharmacy count raises `ValueError`.
 
-Run `pytest -v` from the repository root to execute all tests. Automated coverage for generators and reporting remains future work.
+### Enrollment generator tests
+
+Tests for `generate_enrollment()` verify:
+
+- Successful generation of the requested number of pharmacy records.
+- The default generation count of 250 pharmacies.
+- The expected `Pharmacy NPI` output column.
+- Unique generated NPIs.
+- Correct first and last NPI formatting.
+- Creation of the exported `data/raw/enrolled_pharmacies.xlsx` workbook.
+- Rejection of non-integer inputs, including strings and booleans, with `TypeError`.
+- Rejection of zero and negative pharmacy counts with `ValueError`.
+
+Run `pytest -v` from the repository root to execute all 36 tests. Automated coverage for the remaining generators and reporting modules remains future work.
 
 ### Clean-room workflow check
 
@@ -376,10 +389,11 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Pytest setup and 26 automated tests covering claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, financial data validation, NPI/name integrity, empty inputs, and input preservation
+- [x] Pytest setup and 36 automated tests covering claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment generation, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
 - [x] Add automated tests for final status assignment and watchlist validation
-- [ ] Add automated tests for generators and reporting
+- [x] Add automated tests for the enrollment generator
+- [ ] Add automated tests for the remaining generators and reporting
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
