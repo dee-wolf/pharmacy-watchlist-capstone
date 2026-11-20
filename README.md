@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 12-test claims-processor suite are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and an 18-test claims/watchlist processor suite are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -208,7 +208,8 @@ pharmacy-watchlist-capstone/
 │
 ├── tests/                           # Automated tests
 │   ├── __init__.py
-│   └── test_claims_processor.py
+│   ├── test_claims_processor.py
+│   └── test_watchlist_processor.py
 ├── demo.py                          # Project demonstration
 ├── orchestration.py                 # End-to-end workflow entry point
 ├── pytest.ini                       # Pytest configuration
@@ -310,7 +311,9 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The current suite contains **12 automated tests** across `exclude_test_claims()` and `aggregate_claims()`.
+The current suite contains **18 automated tests** across `claims_processor.py` and `watchlist_processor.py`.
+
+### Claims processor tests — 12 tests
 
 Claims-filtering tests verify that ordinary member claims are retained, `SB393 TEST` records are excluded regardless of surrounding whitespace or letter case, and the original input DataFrame remains unchanged.
 
@@ -325,7 +328,22 @@ Claims-aggregation tests cover:
 - Acceptance of one pharmacy name associated with multiple NPIs.
 - Preservation of the original input DataFrame during processing.
 
-Run `pytest -v` from the repository root to execute all tests. Enrollment/watchlist processor and reporting tests remain future work.
+### Watchlist processor tests — 6 tests
+
+Enrollment-matching tests for `match_enrollment()` verify:
+
+- All original watchlist records are preserved by the left merge.
+- The original watchlist and enrollment DataFrames remain unchanged.
+- Enrollment matches and unmatched NPIs receive the expected merge indicators.
+- An empty watchlist produces an empty result with the expected output columns.
+
+Claims/watchlist merge tests for `merge_claims_with_watchlist()` verify:
+
+- Claims counts and plan-paid amounts are merged onto the correct pharmacy NPIs.
+- Pharmacies without a matching claims record remain in the result with missing claims metrics.
+- The original enrollment-matched watchlist and aggregated claims DataFrames remain unchanged.
+
+Run `pytest -v` from the repository root to execute all tests. Automated coverage for `assign_final_status()`, validators, generators, and reporting remains future work.
 
 ### Clean-room workflow check
 
@@ -343,9 +361,9 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Pytest setup and 12 claims-processor unit tests covering filtering, aggregation, financial data validation, NPI/name integrity, and input preservation
+- [x] Pytest setup and 18 claims/watchlist processor unit tests covering filtering, aggregation, enrollment matching, claims merging, financial data validation, NPI/name integrity, empty inputs, and input preservation
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
-- [ ] Add automated tests for watchlist/enrollment processing, validators, generators, and reporting
+- [ ] Add automated tests for final status assignment, validators, generators, and reporting
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
