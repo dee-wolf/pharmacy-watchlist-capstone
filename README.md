@@ -315,9 +315,13 @@ The current suite contains **18 automated tests** across `claims_processor.py` a
 
 ### Claims processor tests — 12 tests
 
-Claims-filtering tests verify that ordinary member claims are retained, `SB393 TEST` records are excluded regardless of surrounding whitespace or letter case, and the original input DataFrame remains unchanged.
+Claims-filtering tests for `exclude_test_claims()` verify:
 
-Claims-aggregation tests cover:
+- Ordinary member claims are retained while `SB393 TEST` records are excluded regardless of surrounding whitespace or letter case.
+- All-test-claim input produces an empty DataFrame.
+- The original input DataFrame remains unchanged.
+
+Claims-aggregation tests for `aggregate_claims()` verify:
 
 - Correct grouping by pharmacy name and NPI, claim counts, plan-paid totals, and descending sort order.
 - Zero-dollar claims and empty input DataFrames.
