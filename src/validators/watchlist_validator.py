@@ -1,6 +1,7 @@
 import pandas as pd
 from ..generators.watchlist_reasons import watchlist_reasons
 
+
 def validate_watchlist(
     watchlist,
     expected_count=300,

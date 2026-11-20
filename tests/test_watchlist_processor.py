@@ -1,7 +1,6 @@
 import pandas as pd
 import pytest
-
-from src.processors.watchlist_processor import match_enrollment, merge_claims_with_watchlist
+from src.processors.watchlist_processor import match_enrollment, merge_claims_with_watchlist, assign_final_status
 
 
 def test_match_enrollment_preserves_all_watchlist_records():
@@ -169,3 +168,96 @@ def test_merge_claims_not_modifying_originals():
     merge_claims_with_watchlist(enrollment_match, aggregated_claims)
     pd.testing.assert_frame_equal(enrollment_match, enrollment_copy)
     pd.testing.assert_frame_equal(aggregated_claims, aggregated_copy)
+
+def test_assign_final_status():
+    test_df = pd.DataFrame({
+        "NPI": [
+            "TEST-001",
+            "TEST-003",
+            "TEST-004"
+        ],
+        "Pharmacy Name": [
+            "Feywild Apothecary",
+            "Neverwinter Drugs",
+            "Waterdeep Pharmacy"
+        ],
+        "enrollment_status": [
+            "both",
+            "left_only",
+            "both"
+        ],
+        "claims_status": [
+            "left_only",
+            "left_only",
+            "both"
+        ],
+        "12 Month Claim Count": [
+            None,
+            None,
+            150
+        ],
+        "12 Month Plan Paid": [
+            None,
+            None,
+            34815.50
+        ]
+    })
+    final = assign_final_status(test_df)
+    assert final.loc[final["Pharmacy Name"] == "Feywild Apothecary", "Final Status"].iloc[0] == "Participating - No Claims"
+    assert final.loc[final["Pharmacy Name"] == "Feywild Apothecary", "12 Month Claim Count"].iloc[0] == 0
+    assert final.loc[final["Pharmacy Name"] == "Feywild Apothecary", "12 Month Plan Paid"].iloc[0] == 0
+    assert final.loc[final["Pharmacy Name"] == "Neverwinter Drugs", "Final Status"].iloc[0] == "Not Participating"
+    assert pd.isna(final.loc[final["Pharmacy Name"] == "Neverwinter Drugs", "12 Month Claim Count"].iloc[0])
+    assert pd.isna(final.loc[final["Pharmacy Name"] == "Neverwinter Drugs", "12 Month Plan Paid"].iloc[0])
+    assert final.loc[final["Pharmacy Name"] == "Waterdeep Pharmacy", "Final Status"].iloc[0] == "Participating - Has Claims"
+    assert final.loc[final["Pharmacy Name"] == "Waterdeep Pharmacy", "12 Month Claim Count"].iloc[0] == 150
+    assert final.loc[final["Pharmacy Name"] == "Waterdeep Pharmacy", "12 Month Plan Paid"].iloc[0] == 34815.50
+
+def test_assign_final_status_review_fallback():
+    test_df = pd.DataFrame({
+        "NPI": [
+            "TEST-001"
+        ],
+        "Pharmacy Name": [
+            "Feywild Apothecary"
+        ],
+        "enrollment_status": [
+            "both"
+        ],
+        "claims_status": [
+            "unexpected"
+        ],
+        "12 Month Claim Count": [
+            None
+        ],
+        "12 Month Plan Paid": [
+            None
+        ]
+    })
+    final = assign_final_status(test_df)
+    assert final.loc[final["Pharmacy Name"] == "Feywild Apothecary", "Final Status"].iloc[0] == "Review"
+
+def test_assign_final_status_modifies_original():
+    test_df = pd.DataFrame({
+        "NPI": [
+            "TEST-001"
+        ],
+        "Pharmacy Name": [
+            "Feywild Apothecary"
+        ],
+        "enrollment_status": [
+            "both"
+        ],
+        "claims_status": [
+            "left_only"
+        ],
+        "12 Month Claim Count": [
+            None
+        ],
+        "12 Month Plan Paid": [
+            None
+        ]
+    })
+    final = assign_final_status(test_df)
+    assert "Final Status" in test_df.columns
+    assert test_df.loc[0, "Final Status"] == "Participating - No Claims"
