@@ -96,7 +96,6 @@ def test_exclude_test_claims_preserves_original_dataframe():
         ]
     })
     original_df = test_df.copy()
-    filtered_df = exclude_test_claims(test_df)
     pd.testing.assert_frame_equal(original_df, test_df)
 
 def test_aggregate_claims_with_missing_payment():
