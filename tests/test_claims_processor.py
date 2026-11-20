@@ -76,7 +76,7 @@ def test_aggregate_claims_with_empty_dataframe():
         "Plan_Paid"
     ]
 
-def test_exclude_test_claims_when_all_records_are_test_claims():
+def test_exclude_test_claims__all_records_are_test_claims():
     test_df = pd.DataFrame({
         "Member Name": [
             "SB393 TEST",

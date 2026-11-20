@@ -3,7 +3,7 @@ import pytest
 from src.processors.watchlist_processor import match_enrollment, merge_claims_with_watchlist, assign_final_status
 
 
-def test_match_enrollment_preserves_all_watchlist_records():
+def test_match_enrollment_preserves_watchlist_records():
     watchlist = pd.DataFrame({
         "NPI": ["TEST-001", "TEST-002", "TEST-003"],
         "Pharmacy Name": [
