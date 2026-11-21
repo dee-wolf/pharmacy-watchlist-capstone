@@ -210,7 +210,9 @@ pharmacy-watchlist-capstone/
 │   ├── __init__.py
 │   ├── test_claims_processor.py
 │   ├── test_watchlist_processor.py
-│   └── test_watchlist_validator.py
+│   ├── test_watchlist_validator.py
+│   ├── test_enrollment_generator.py
+│   └── test_watchlist_generator.py
 ├── demo.py                          # Project demonstration
 ├── orchestration.py                 # End-to-end workflow entry point
 ├── pytest.ini                       # Pytest configuration
