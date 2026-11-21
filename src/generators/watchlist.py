@@ -30,6 +30,8 @@ def generate_watchlist(
         raise ValueError("Please use a valid month in YYYY-MM format.")
     if num_pharmacies > len(generate_pharmacy_names()):
         raise ValueError("Not enough unique pharmacy name combinations.")
+    if isinstance(seed, bool) or not isinstance(seed, int):
+        raise TypeError("Please use a number for the randomization seed.")
     months = pd.date_range(end=reporting_month, periods=12, freq="MS")
     enrollment_df = generate_enrollment(participating_count)
     participating_npis = enrollment_df["Pharmacy NPI"].tolist()
@@ -46,8 +48,14 @@ def generate_watchlist(
     name_rng.shuffle(full_names)
     pharmacy_records = list(zip(all_npis, full_names))
     watchlist_df = pd.DataFrame(pharmacy_records, columns=["NPI", "Pharmacy Name"])
-    additions = [reporting_month] * 25
-    previous = [month_rng.choice(months[:-1]) for i in range(275)]
+    new_pharmacy_count = round(num_pharmacies * (25 / 300))
+    previous_pharmacy_count = num_pharmacies - new_pharmacy_count
+
+    additions = [reporting_month] * new_pharmacy_count
+    previous = [
+        month_rng.choice(months[:-1])
+        for i in range(previous_pharmacy_count)
+    ]
     all_months = additions + previous
     month_rng.shuffle(all_months)
     reasons = reason_rng.choices(list(reason_weights.keys()), weights=list(reason_weights.values()), k=num_pharmacies)
