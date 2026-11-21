@@ -360,7 +360,7 @@ Tests for `validate_watchlist()` verify:
 - An incorrect participating pharmacy count raises `ValueError`.
 - An incorrect nonparticipating pharmacy count raises `ValueError`.
 
-### Enrollment generator tests
+### Enrollment generator tests - 10 tests
 
 Tests for `generate_enrollment()` verify:
 
