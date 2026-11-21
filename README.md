@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 40-test suite covering claims processing, watchlist processing, watchlist validation, and enrollment and watchlist generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 45-test suite covering claims processing, watchlist processing, watchlist validation, and enrollment and watchlist generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -314,7 +314,7 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The current suite contains **40 automated tests** across the claims processor, watchlist processor, watchlist validator, enrollment generator, and watchlist generator.
+The current suite contains **45 automated tests** across the claims processor, watchlist processor, watchlist validator, enrollment generator, and watchlist generator.
 
 ### Claims processor tests — 12 tests
 
@@ -373,16 +373,22 @@ Tests for `generate_enrollment()` verify:
 - Rejection of non-integer inputs, including strings and booleans, with `TypeError`.
 - Rejection of zero and negative pharmacy counts with `ValueError`.
 
-### Watchlist generator tests — 4 tests
+### Watchlist generator tests — 9 tests
 
 Tests for `generate_watchlist()` verify:
 
 - Boolean input for `num_pharmacies` is rejected with `TypeError`.
 - Boolean input for `participating_count` is rejected with `TypeError`.
-- A string value for `seed` raises `TypeError` when the generator attempts to derive its independent random seeds.
+- String and Boolean values for `seed` are rejected with `TypeError`.
 - A non-string `reporting_month` is rejected with `TypeError`.
+- A malformed reporting-month string raises `ValueError`.
+- Small configurable watchlists can be generated and both the watchlist and enrollment Excel workbooks are created.
+- Reusing the same seed and configuration produces identical DataFrames.
+- Changing the seed produces different randomized DataFrames.
 
-Run `pytest -v` from the repository root to execute all 40 tests. Automated coverage for the remaining generators and reporting modules remains future work.
+The watchlist generator accepts a configurable pharmacy count and participating-pharmacy count. The number of pharmacies assigned to the selected reporting month scales proportionally from the original 25-of-300 baseline; the remaining pharmacies are assigned to earlier months. The reporting month and randomization seed are also generator parameters.
+
+Run `pytest -v` from the repository root to execute all 45 tests. Automated coverage for the remaining generators and reporting modules remains future work.
 
 ### Clean-room workflow check
 
@@ -400,12 +406,13 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Pytest setup and 40 automated tests covering claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment generation, watchlist generator input handling, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
+- [x] Pytest setup and 45 automated tests covering claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment generation, configurable watchlist generation, seed validation and reproducibility, reporting-month validation, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
 - [x] Add automated tests for final status assignment and watchlist validation
 - [x] Add automated tests for the enrollment generator
 - [x] Add initial automated tests for watchlist generator input handling
-- [ ] Expand watchlist generator coverage and add tests for the remaining generators and reporting
+- [x] Expand watchlist generator coverage for configurable pharmacy counts, seed reproducibility, seed variation, and input validation
+- [ ] Add tests for the remaining generators and reporting
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
