@@ -48,7 +48,7 @@ def generate_watchlist(
     name_rng.shuffle(full_names)
     pharmacy_records = list(zip(all_npis, full_names))
     watchlist_df = pd.DataFrame(pharmacy_records, columns=["NPI", "Pharmacy Name"])
-    new_pharmacy_count = round(num_pharmacies * (25 / 300))
+    new_pharmacy_count = int(num_pharmacies * (25 / 300) + 0.5)
     previous_pharmacy_count = num_pharmacies - new_pharmacy_count
 
     additions = [reporting_month] * new_pharmacy_count

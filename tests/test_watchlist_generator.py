@@ -46,3 +46,33 @@ def test_watchlist_reporting_month_format():
 def test_watchlist_seed_format():
     with pytest.raises(TypeError):
         generate_watchlist(seed=True)
+
+def test_watchlist_generator_correct_amount(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data" / "raw").mkdir(parents=True)
+    result = generate_watchlist(num_pharmacies=30, participating_count=20)
+    assert len(result)
+
+def test_watchlist_generator_month_percentage(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data" / "raw").mkdir(parents=True)
+    result = generate_watchlist(num_pharmacies=30, participating_count=20)
+    assert result[result["Month Added to List"] == "2026-11"].shape[0] == 3
+
+def test_watchlist_generator_enrollment_count(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data" / "raw").mkdir(parents=True)
+    result = generate_watchlist(num_pharmacies=30, participating_count=20)
+    assert result["NPI"].str.startswith("TEST-").sum() == 20
+
+def test_watchlist_generator_participating_count(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data" / "raw").mkdir(parents=True)
+    result = generate_watchlist(num_pharmacies=30, participating_count=30)
+    assert result["NPI"].str.startswith("OUT-").sum() == 0
+
+def test_generate_pharmacy_names(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "data" / "raw").mkdir(parents=True)
+    with pytest.raises(ValueError):
+        generate_watchlist(num_pharmacies=311, participating_count=200)
