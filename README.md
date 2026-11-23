@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 79-test suite covering claims processing, claims generation, watchlist processing, watchlist validation, enrollment and watchlist generation, member-name generation, and pharmacy-name generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, and end-to-end orchestration are implemented. The latest full local test run reported 94 passing tests across data generation, processing, validation, reporting, and orchestration. The synthetic workflow has also passed a clean-room run after generated inputs and outputs were cleared.
 
 ---
 
@@ -207,15 +207,17 @@ pharmacy-watchlist-capstone/
 │   └── generate_data.py             # Synthetic data entry point
 │
 ├── tests/                           # Automated tests
-│   ├── __init__.py
-│   ├── test_claims_processor.py
-│   ├── test_watchlist_processor.py
-│   ├── test_watchlist_validator.py
-│   ├── test_enrollment_generator.py
-│   ├── test_watchlist_generator.py
 │   ├── test_claims_generator.py
+│   ├── test_claims_processor.py
+│   ├── test_enrollment_generator.py
+│   ├── test_excel_report.py
 │   ├── test_member_names.py
-│   └── test_name_parts.py
+│   ├── test_name_parts.py
+│   ├── test_orchestration.py
+│   ├── test_powerpoint_report.py
+│   ├── test_watchlist_generator.py
+│   ├── test_watchlist_processor.py
+│   └── test_watchlist_validator.py
 ├── demo.py                          # Project demonstration
 ├── orchestration.py                 # End-to-end workflow entry point
 ├── pytest.ini                       # Pytest configuration
@@ -317,7 +319,7 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The current suite contains **79 automated tests** across claims and watchlist processing, watchlist validation, and the enrollment, watchlist, claims, member-name, and pharmacy-name generators.
+The latest full local run reported **94 passing tests**. The suite covers synthetic data generators, claims and watchlist processing, validation, Excel and PowerPoint reporting, and end-to-end orchestration. Test counts by file are intentionally omitted here so this summary stays aligned with the current suite as it evolves.
 
 ### Claims processor tests — 12 tests
 
@@ -409,7 +411,7 @@ Tests for `generate_claims()` verify:
 - Generated payment amounts fall within the $5.00–$5,000.00 range.
 - The `data/raw/cognos_claims_minimal.xlsx` output workbook is created.
 
-### Member-name generator tests — 10 tests
+### Member-name generator tests
 
 Tests for `generate_member_names()` verify:
 
@@ -420,7 +422,7 @@ Tests for `generate_member_names()` verify:
 - String and Boolean seeds raise `TypeError`.
 - Requests exceeding the 2,100 available first-name/last-name combinations raise `ValueError`.
 
-### Pharmacy-name generator tests — 3 tests
+### Pharmacy-name generator tests
 
 Tests for `generate_pharmacy_names()` verify:
 
@@ -428,7 +430,31 @@ Tests for `generate_pharmacy_names()` verify:
 - All generated pharmacy names are unique.
 - Expected combinations from the source lists are present in the output.
 
-Run `pytest -v` from the repository root to execute all 79 tests. Automated coverage for the remaining reporting modules and orchestration remains future work.
+### Excel reporting tests
+
+Tests for `filter_reporting_month()` and `report_to_excel()` verify:
+
+- Filtering pharmacies to the selected reporting month.
+- Sorting filtered pharmacies by plan-paid amount in descending order.
+- Creation of the Excel workbook with the expected client-facing headers and data.
+- Currency and date number formats.
+- Frozen header row and worksheet auto-filter configuration.
+
+### PowerPoint reporting tests
+
+Tests for the presentation functions verify:
+
+- Presentation dimensions and title-slide content.
+- Review-summary wording and participating-pharmacy counts.
+- Inclusion of participating pharmacies and exclusion of nonparticipating pharmacies from the summary table.
+- Pagination when more than five participating pharmacies need to be displayed.
+- Definitions-slide title and creation.
+
+### Orchestration test
+
+The orchestration test mocks the pipeline stages and verifies that `main()` passes the expected data between generation, processing, filtering, Excel reporting, and PowerPoint reporting. It also verifies the reporting-month-specific output filenames and that the presentation is saved.
+
+Run `pytest -v` from the repository root to execute the full test suite.
 
 ### Clean-room workflow check
 
@@ -446,14 +472,14 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Pytest setup and 79 automated tests covering claims filtering and aggregation, claims generation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment and watchlist generation, member-name generation, pharmacy-name generation, seed validation and reproducibility, reporting-month validation, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
+- [x] Pytest setup and automated tests covering data generation, claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, Excel and PowerPoint reporting, and end-to-end orchestration
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
 - [x] Add automated tests for final status assignment and watchlist validation
 - [x] Add automated tests for the enrollment generator
 - [x] Add initial automated tests for watchlist generator input handling
 - [x] Expand watchlist generator coverage for configurable pharmacy counts, proportional monthly additions, enrollment counts, maximum name capacity, seed reproducibility, seed variation, and input validation
 - [x] Add automated tests for claims generation, member-name generation, and pharmacy-name generation
-- [ ] Add tests for the remaining reporting modules and orchestration
+- [x] Add automated tests for Excel reporting, PowerPoint reporting, and end-to-end orchestration
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
