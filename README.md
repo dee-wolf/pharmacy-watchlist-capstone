@@ -11,7 +11,7 @@ The **Pharmacy Watchlist Analytics Pipeline** models a monthly healthcare analyt
 
 The project uses **entirely synthetic data** to demonstrate how Python can reduce repetitive spreadsheet work, improve consistency, and make an analytical workflow more reproducible.
 
-> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 50-test suite covering claims processing, watchlist processing, watchlist validation, and enrollment and watchlist generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
+> **Project status:** Synthetic data generation, claims and enrollment processing, Excel and PowerPoint reporting, end-to-end orchestration, and a 79-test suite covering claims processing, claims generation, watchlist processing, watchlist validation, enrollment and watchlist generation, member-name generation, and pharmacy-name generation are implemented. The synthetic workflow has passed a clean-room run from an empty generated-data/output state.
 
 ---
 
@@ -212,7 +212,10 @@ pharmacy-watchlist-capstone/
 │   ├── test_watchlist_processor.py
 │   ├── test_watchlist_validator.py
 │   ├── test_enrollment_generator.py
-│   └── test_watchlist_generator.py
+│   ├── test_watchlist_generator.py
+│   ├── test_claims_generator.py
+│   ├── test_member_names.py
+│   └── test_name_parts.py
 ├── demo.py                          # Project demonstration
 ├── orchestration.py                 # End-to-end workflow entry point
 ├── pytest.ini                       # Pytest configuration
@@ -314,7 +317,7 @@ Run the test suite from the repository root with the virtual environment activat
 pytest -v
 ```
 
-The current suite contains **50 automated tests** across the claims processor, watchlist processor, watchlist validator, enrollment generator, and watchlist generator.
+The current suite contains **79 automated tests** across claims and watchlist processing, watchlist validation, and the enrollment, watchlist, claims, member-name, and pharmacy-name generators.
 
 ### Claims processor tests — 12 tests
 
@@ -391,7 +394,41 @@ Tests for `generate_watchlist()` verify:
 
 The watchlist generator accepts configurable pharmacy and participating-pharmacy counts. The number of pharmacies assigned to the selected reporting month scales proportionally from the original 25-of-300 baseline, using conventional half-up rounding to a whole pharmacy; the remaining pharmacies are assigned to earlier months. The reporting month and randomization seed are also generator parameters.
 
-Run `pytest -v` from the repository root to execute all 50 tests. Automated coverage for the remaining generators and reporting modules remains future work.
+### Claims generator tests — 16 tests
+
+Tests for `generate_claims()` verify:
+
+- The default output contains 1,500 claims and a custom requested claim count is respected.
+- Reusing the same seed produces identical DataFrames, while different seeds produce different results.
+- Invalid `num_claims` types raise `TypeError`; zero and negative counts raise `ValueError`.
+- Invalid `test_claims` types raise `TypeError`; negative test-claim counts and test-claim counts exceeding total claims raise `ValueError`.
+- The requested number of `SB393 TEST` records is generated.
+- Claims are assigned only to participating pharmacy NPIs, identified by the `TEST-` prefix.
+- A watchlist with no participating pharmacies raises `ValueError`.
+- The output contains the expected member, pharmacy, NPI, and payment columns.
+- Generated payment amounts fall within the $5.00–$5,000.00 range.
+- The `data/raw/cognos_claims_minimal.xlsx` output workbook is created.
+
+### Member-name generator tests — 10 tests
+
+Tests for `generate_member_names()` verify:
+
+- The default output contains 1,000 names and a custom requested count is respected.
+- Reusing the same seed produces the same name list.
+- Generated member names are unique.
+- String member counts raise `TypeError`; zero and negative counts raise `ValueError`.
+- String and Boolean seeds raise `TypeError`.
+- Requests exceeding the 2,100 available first-name/last-name combinations raise `ValueError`.
+
+### Pharmacy-name generator tests — 3 tests
+
+Tests for `generate_pharmacy_names()` verify:
+
+- Exactly 310 pharmacy names are generated from the configured name parts and pharmacy types.
+- All generated pharmacy names are unique.
+- Expected combinations from the source lists are present in the output.
+
+Run `pytest -v` from the repository root to execute all 79 tests. Automated coverage for the remaining reporting modules and orchestration remains future work.
 
 ### Clean-room workflow check
 
@@ -409,13 +446,14 @@ The synthetic end-to-end workflow was manually verified after clearing the gener
 - [x] Formatted Excel report generation
 - [x] PowerPoint title, summary, paginated pharmacy tables, and definitions/reference slide
 - [x] End-to-end orchestration for synthetic data generation, processing, and Excel/PowerPoint reporting
-- [x] Pytest setup and 50 automated tests covering claims filtering and aggregation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment generation, configurable watchlist generation, seed validation and reproducibility, reporting-month validation, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
+- [x] Pytest setup and 79 automated tests covering claims filtering and aggregation, claims generation, enrollment matching, claims merging, final status assignment, watchlist validation, enrollment and watchlist generation, member-name generation, pharmacy-name generation, seed validation and reproducibility, reporting-month validation, financial data validation, NPI/name integrity, empty inputs, input preservation, and generated-file creation
 - [x] Clean-room run of the synthetic orchestration workflow after clearing generated inputs and outputs
 - [x] Add automated tests for final status assignment and watchlist validation
 - [x] Add automated tests for the enrollment generator
 - [x] Add initial automated tests for watchlist generator input handling
 - [x] Expand watchlist generator coverage for configurable pharmacy counts, proportional monthly additions, enrollment counts, maximum name capacity, seed reproducibility, seed variation, and input validation
-- [ ] Add tests for the remaining generators and reporting
+- [x] Add automated tests for claims generation, member-name generation, and pharmacy-name generation
+- [ ] Add tests for the remaining reporting modules and orchestration
 - [ ] Perform a fresh-clone installation test of the complete workflow and README instructions
 
 ---
