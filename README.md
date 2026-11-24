@@ -411,7 +411,7 @@ Tests for `generate_claims()` verify:
 - Generated payment amounts fall within the $5.00–$5,000.00 range.
 - The `data/raw/cognos_claims_minimal.xlsx` output workbook is created.
 
-### Member-name generator tests
+### Member-name generator tests — 9 tests
 
 Tests for `generate_member_names()` verify:
 
@@ -422,7 +422,7 @@ Tests for `generate_member_names()` verify:
 - String and Boolean seeds raise `TypeError`.
 - Requests exceeding the 2,100 available first-name/last-name combinations raise `ValueError`.
 
-### Pharmacy-name generator tests
+### Pharmacy-name generator tests — 3 tests
 
 Tests for `generate_pharmacy_names()` verify:
 
@@ -430,7 +430,7 @@ Tests for `generate_pharmacy_names()` verify:
 - All generated pharmacy names are unique.
 - Expected combinations from the source lists are present in the output.
 
-### Excel reporting tests
+### Excel reporting tests — 8 tests
 
 Tests for `filter_reporting_month()` and `report_to_excel()` verify:
 
@@ -440,7 +440,7 @@ Tests for `filter_reporting_month()` and `report_to_excel()` verify:
 - Currency and date number formats.
 - Frozen header row and worksheet auto-filter configuration.
 
-### PowerPoint reporting tests
+### PowerPoint reporting tests — 6 tests
 
 Tests for the presentation functions verify:
 
@@ -450,7 +450,7 @@ Tests for the presentation functions verify:
 - Pagination when more than five participating pharmacies need to be displayed.
 - Definitions-slide title and creation.
 
-### Orchestration test
+### Orchestration test — 1 test
 
 The orchestration test mocks the pipeline stages and verifies that `main()` passes the expected data between generation, processing, filtering, Excel reporting, and PowerPoint reporting. It also verifies the reporting-month-specific output filenames and that the presentation is saved.
 
