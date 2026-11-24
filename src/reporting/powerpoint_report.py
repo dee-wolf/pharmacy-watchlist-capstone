@@ -102,6 +102,9 @@ def add_definitions_slide(slide_deck):
         paragraph.runs[0].font.color.rgb = RGBColor(31, 78, 121)
     title_box.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
     definitions_box = slide.shapes.add_textbox(left=Inches(0.75), top=Inches(1.6), width=Inches(11.83), height=Inches(5.5))
+    definitions_box.text_frame.word_wrap = True
+    definitions_box.text_frame.margin_left = Inches(0.1)
+    definitions_box.text_frame.margin_right = Inches(0.1)
     fwa_paragraph = definitions_box.text_frame.paragraphs[0]
     fwa_paragraph.text = "FWA Issue/FWA Triage = Pharmacy is not currently contracted and was subject of FWA report."
     add_bullet(fwa_paragraph, 0)
@@ -138,6 +141,9 @@ def add_definitions_slide(slide_deck):
     ndt_paragraph = definitions_box.text_frame.add_paragraph()
     ndt_paragraph.text = "Network Denial or Termination = Pharmacy was declined participation or terminated from networks due to FWA."
     add_bullet(ndt_paragraph, 0)
+    for paragraph in definitions_box.text_frame.paragraphs:
+        for run in paragraph.runs:
+            run.font.size = Pt(14)
 
 if __name__ == "__main__":
     from src.generators.watchlist import generate_watchlist
