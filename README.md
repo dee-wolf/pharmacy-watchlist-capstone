@@ -411,7 +411,7 @@ Tests for `generate_claims()` verify:
 - Generated payment amounts fall within the $5.00–$5,000.00 range.
 - The `data/raw/cognos_claims_minimal.xlsx` output workbook is created.
 
-### Member-name generator tests — 9 tests
+### Member-name generator tests — 10 tests
 
 Tests for `generate_member_names()` verify:
 
